@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+
+{% block content %}
+{% if visi_irasai%}
+<table class="table">
+    <thead>
+        <tr>
+            <h3 class="text-center">Registruotos mašinos</h3>
+        </tr>
+        <tr>
+            <th schope="col" class="text-center">ID</th>
+            <th scope="col" class="text-center">Prideta</th>
+            <th scope="col" class="text-center">Modelis</th>
+            <th scope="col" class="text-center">Markė</th>
+            <th scope="col" class="text-center">Gaminimo metai</th>
+            <th scope="col" class="text-center">Variklis</th>
+            <th scope="col" class="text-center">Valstybinis numeris</th>
+            <th scope="col" class="text-center">VIN</th>
+            <th scope="col" class="text-center">Gedimai</th>
+        </tr>
+    </thead>
+{%for irasas in visi_irasai.items%}
+    <tr>
+        <td class="text-center">
+            {{irasas.id}}
+        </td>
+        <td class="text-center">
+            {{datetime.strftime(irasas.sukurta, "%Y-%m-%d %H:%M:%S")}}
+        </td>
+        <td class="text-center">
+            {{irasas.modelis}}
+        </td>
+        <td class="text-center">
+            {{irasas.marke}}
+        </td>
+        <td class="text-center">
+            {{irasas.gaminimo_metai}}
+        </td>
+        <td class="text-center">
+            {{irasas.variklis}}
+        </td>
+        <td class="text-center">
+            {{irasas.valst_numeris}}
+        </td>
+        <td class="text-center">
+            {{irasas.vin}}
+        </td>
+        <td>
+            <a role="button" class="btn btn-primary float-right" href="{{ url_for('gedimu_istorija', masina_id=irasas.id) }}">Gedimai</a>
+        </td>
+    </tr>
+{%endfor%}
+</table>
+{%for page_num in visi_irasai.iter_pages(left_edge=1, right_edge=1,left_current=1, right_current=1)%}
+    {%if page_num %}
+        {%if visi_irasai.page == page_num%}
+            <a class="btn btn-info mb-4" href="{{url_for('records', page=page_num)}}">{{ page_num }}</a>
+        {% else %}
+            <a class="btn btn-outline-info mb-4" href="{{url_for('records', page=page_num)}}">{{ page_num }}</a>
+        {%endif%}
+    {%else%}
+    ...
+    {%endif%}
+{% endfor%}
+{% endif %}
+{% endblock content %}

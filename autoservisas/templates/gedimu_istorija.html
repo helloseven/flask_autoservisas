@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+
+{% block content %}
+{% if visi_gedimai %}
+<table class="table">
+    <thead>
+        <tr>
+            <h3 class="center">Gedimų istorija</h3>
+        </tr>
+        <tr>
+            <th scope="col" class="text-center">ID</th>
+            <th scope="col" class="text-center">Prideta</th>
+            <th scope="col" class="text-center">Gedimai</th>
+            <th scope="col" class="text-center">Būsena</th>
+            {% if not current_user.is_employee%}
+                <th schop="col" class="text-center">Remonto Kaina €</th>
+            {% endif %}
+            {% if current_user.is_employee %}
+                <th scope="col" class="text-center">Keisti būsena</th>
+                <th scope="col" class="text-center">Remonto Kaina €</th>
+                <th scope="col" class="text-center">Redaguoti</th>
+            {% endif %}
+        </tr>
+    </thead>
+{%for gedimas in visi_gedimai%}
+    <tr>
+        <td class="text-center">
+            {{gedimas.id}}
+        </td>
+        <td class="text-center">
+            {%if gedimas.sukurta%}
+                {{datetime.strftime(gedimas.sukurta, "%Y-%m-%d %H:%M:%S")}}
+            {%endif%}
+        </td>
+        <td class="table-danger text-center">
+            {{gedimas.gedimas}}
+        </td>
+        <td class="text-center">
+            {{gedimas.gedimo_busena}}
+        </td>
+        {% if not current_user.is_employee%}
+        <td class="text-center">
+            {{gedimas.gedimo_kaina}}
+        </td>
+        {% endif %}
+        {% if current_user.is_employee %}
+        <form action="{{ url_for('keisti_busena', gedimas_id=gedimas.id) }}" method="POST">
+        <td>
+            <select name="busena">
+                {% for o in busena %}
+                    <option value="{{o.name}}">{{o.name}}</option>
+                {% endfor %}
+                </select>  
+        </td>
+        <td>
+            <input class="text-center" type="text" name="price" value="{{gedimas.gedimo_kaina}}" style="width:100px;">
+            
+        </td>
+        
+        <td>
+            <input type="submit" value="Išsaugoti" class="btn btn-outline btn-success float-left">
+        </form>
+            <a role="button" class="btn btn-outline btn-danger float-right" href="{{ url_for('pasalinti_gedima', masina_id=masina_id, gedimas_id=gedimas.id) }}">Pašalinti</a> 
+        </td>
+        {% endif %}
+    </tr>
+{%endfor%}
+</table>
+{%else%}
+    Gedimų nėra.
+{% endif %}
+{% endblock content %}

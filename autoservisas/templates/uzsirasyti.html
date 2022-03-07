@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+
+{%block content%}
+<div class="content-section"> 
+<form action="{{url_for('uzsirasyti')}}" method="post">{{ form.hidden_tag() }}
+    <fieldset>
+        <legend class="border-bottom mb-4">Užsirašyti į remontą</legend>
+        <div class="form-group">
+                {{ form.modelis.label(class="form-control-label")}}
+                {%if form.modelis.errors%}
+                {{ form.modelis(class="form-control form-control-lg is-invalid")}}
+                    <div class="invalid-feedback">
+                        {%for error in form.modelis.errors%}
+                            <span>{{ error }}</span>
+                        {%endfor%}
+                    </div>
+                {%else%}
+                    {{ form.modelis(class="form-control form-control-lg")}}
+                {%endif%}
+            </div>
+            <div class="form-group">
+                {{ form.marke.label(class="form-control-label")}}
+                {%if form.marke.errors%}
+                {{ form.marke(class="form-control form-control-lg is-invalid")}}
+                    <div class="invalid-feedback">
+                        {%for error in form.marke.errors%}
+                            <span>{{ error }}</span>
+                        {%endfor%}
+                    </div>
+                {%else%}
+                    {{ form.marke(class="form-control form-control-lg")}}
+                {%endif%}
+            </div>
+            <div class="form-group">
+                {{ form.gaminimo_metai.label(class="form-control-label")}}
+                {%if form.gaminimo_metai.errors%}
+                {{ form.gaminimo_metai(class="form-control form-control-lg is-invalid")}}
+                    <div class="invalid-feedback">
+                        {%for error in form.gaminimo_metai.errors%}
+                            <span>{{ error }}</span>
+                        {%endfor%}
+                    </div>
+                {%else%}
+                    {{ form.gaminimo_metai(class="form-control form-control-lg")}}
+                {%endif%}   
+            </div>
+            <div class="form-group">
+                {{ form.variklis.label(class="form-control-label")}}
+                {%if form.variklis.errors%}
+                {{ form.variklis(class="form-control form-control-lg is-invalid")}}
+                    <div class="invalid-feedback">
+                        {%for error in form.variklis.errors%}
+                            <span>{{ error }}</span>
+                        {%endfor%}
+                    </div>
+                {%else%}
+                    {{ form.variklis(class="form-control form-control-lg")}}
+                {%endif%}   
+            </div>
+            <div class="form-group">
+                {{ form.valst_numeris.label(class="form-control-label")}}
+                {%if form.valst_numeris.errors%}
+                {{ form.valst_numeris(class="form-control form-control-lg is-invalid")}}
+                    <div class="invalid-feedback">
+                        {%for error in form.valst_numeris.errors%}
+                            <span>{{ error }}</span>
+                        {%endfor%}
+                    </div>
+                {%else%}
+                    {{ form.valst_numeris(class="form-control form-control-lg")}}
+                {%endif%}   
+            </div>
+            <div class="form-group">
+                {{ form.vin.label(class="form-control-label")}}
+                {%if form.vin.errors%}
+                {{ form.vin(class="form-control form-control-lg is-invalid")}}
+                    <div class="invalid-feedback">
+                        {%for error in form.vin.errors%}
+                            <span>{{ error }}</span>
+                        {%endfor%}
+                    </div>
+                {%else%}
+                    {{ form.vin(class="form-control form-control-lg")}}
+                {%endif%}   
+            </div>
+            
+    </fieldset>
+    <div class="form-group">
+        {{ form.submit(class="btn btn-outline-info")}}
+    </div>
+</form>
+</div>
+{%endblock content%}
+
