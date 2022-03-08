@@ -6,9 +6,13 @@
     <thead>
         <tr>
             <h3 class="text-center">Registruotos mašinos</h3>
-        </tr>
+        
         <tr>
-            <th schope="col" class="text-center">ID</th>
+            {%if not current_user.is_employee%}
+                <th schope="col" class="text-center">ID</th>
+            {%else%}
+                <th schope="col" class="text-center">Vartotojas</th>
+            {%endif%}
             <th scope="col" class="text-center">Prideta</th>
             <th scope="col" class="text-center">Modelis</th>
             <th scope="col" class="text-center">Markė</th>
@@ -22,7 +26,11 @@
 {%for irasas in visi_irasai.items%}
     <tr>
         <td class="text-center">
+            {%if not current_user.is_employee%}
             {{irasas.id}}
+            {%else%}
+                {{irasas.vartotojas.vardas}}
+            {%endif%}
         </td>
         <td class="text-center">
             {{datetime.strftime(irasas.sukurta, "%Y-%m-%d %H:%M:%S")}}

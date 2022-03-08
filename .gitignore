@@ -1,5 +1,6 @@
-__pycache__/
+**/__pycache__/**
 venv/
-autoservisas/__pycache__
+autoservisas/__pycache__/
+autoservisas/vartotojai.db
 atsiskaitymas_2.code-workspace
 

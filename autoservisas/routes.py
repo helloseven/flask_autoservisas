@@ -36,10 +36,7 @@ def registracija():
         )
         db.session.add(naujas_vartotojas)
         db.session.commit()
-        user = Vartotojas.query.filter_by(el_pastas=form.el_pastas.data).first()
-        if user.id == 1:
-            user.is_admin = True
-            db.session.commit()
+        
         flash('Sėkmingai prisiregistravote!', 'success')
         return redirect(url_for('home'))
     return render_template('registracija.html', form=form, current_user=current_user)
@@ -56,6 +53,10 @@ def prisijungimas():
         user = Vartotojas.query.filter_by(el_pastas=form.el_pastas.data).first()
         if user and bcrypt.check_password_hash(user.slaptazodis, form.slaptazodis.data):
             login_user(user, remember=form.prisiminti.data)
+            # First user is always admin
+            if current_user == Vartotojas.query.first():
+                current_user.is_admin = True
+                db.session.commit()
             if current_user.is_admin:
                 flash('Jūs esate administratorius.', 'warning')
             elif current_user.is_employee:
@@ -78,7 +79,7 @@ def profilis():
     form = forms.ProfilioForma()
     if form.validate_on_submit():
         current_user.vardas = form.vardas.data
-        current_user.el_pastas = form.el_pastas.data   
+        current_user.el_pastas = form.el_pastas.data
         db.session.commit()
         flash('Profilis atnaujintas!', 'success')
         return redirect(url_for('profilis'))
@@ -95,6 +96,7 @@ def uzsirasyti():
     else:
         form = forms.CarForma()
         if form.validate_on_submit():
+            vartotojas = current_user.id
             naujas_irasas = Car(
                 modelis = form.modelis.data,
                 marke = form.marke.data,
@@ -102,11 +104,11 @@ def uzsirasyti():
                 variklis = form.variklis.data,
                 valst_numeris = form.valst_numeris.data,
                 vin = form.vin.data,
-                vartotojas_id = current_user.id
+                vartotojas_id = vartotojas
             )
             db.session.add(naujas_irasas)
             db.session.commit()
-            flash('Įrašas pridėtas.', 'success')
+            flash('Mašina užregistruota.', 'success')
             return redirect(url_for('uzsirasyti'))
     return render_template('uzsirasyti.html', form=form, current_user=current_user)
 
@@ -124,6 +126,7 @@ def gedimas():
             )
             db.session.add(naujas_irasas)
             db.session.commit()
+            form.gedimas.data = ''
             flash('Gedimas užregistruotas', 'success')
     return render_template('gedimas.html', form=form)
 
@@ -137,6 +140,18 @@ def records():
     else:
         visi_irasai = Car.query.filter_by(vartotojas_id=current_user.id).order_by(Car.sukurta.desc()).paginate(page=page, per_page=5)
     return render_template('irasai.html', visi_irasai=visi_irasai, datetime=datetime)
+
+@app.route('/irasai/<int:masina_id>/delete', methods=['GET', 'POST'])
+@login_required
+def pasalinti_masina(masina_id):
+    if current_user.is_admin:
+        abort(403)
+    else:
+        masina = Car.query.filter_by(id=masina_id).first()
+        db.session.delete(masina)
+        db.session.commit()
+        flash('Mašina pašalinta.', 'success')
+    return render_template('irasai.html', masina_id=masina_id)
 
 @app.route('/gedimu_istorija/<int:masina_id>')
 @login_required
@@ -169,14 +184,4 @@ def pasalinti_gedima(gedimas_id):
         flash('Gedimo įrašas pašalintas.', 'success')
     return render_template('gedimu_istorija.html', gedimas=gedimas, gedimas_id=gedimas_id)
 
-@app.route('/irasai/<int:masina_id>/delete', methods=['GET', 'POST'])
-@login_required
-def pasalinti_masina(masina_id):
-    if current_user.is_admin or current_user.is_employee:
-        abort(403)
-    else:
-        masina = Car.query.filter_by(id=masina_id).first()
-        db.session.delete(masina)
-        db.session.commit()
-        flash('Mašina pašalinta.', 'success')
-    return render_template('irasai.html', masina_id=masina_id)
+

@@ -1,5 +1,4 @@
 from datetime import datetime
-from mmap import MADV_SEQUENTIAL
 from flask_admin.contrib.sqla import ModelView
 from flask_login import UserMixin, current_user
 from sqlalchemy import DateTime 
@@ -10,11 +9,13 @@ class Vartotojas(db.Model, UserMixin):
     vardas = db.Column('Vartotojo vardas', db.String(200), unique=True, nullable=False)
     el_pastas = db.Column('El.paštas', db.String(200), unique=True, nullable=False)
     slaptazodis = db.Column('Slaptažodis', db.String(200), nullable=False)
+    masinos = db.relationship('Car', cascade="all,delete", backref='vartotojas')
     is_admin = db.Column(db.Boolean(), default=False)
     is_employee = db.Column(db.Boolean(), default=False)
 
     def __repr__(self) -> str:
         return self.vardas
+
 
 class Car(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -26,15 +27,15 @@ class Car(db.Model):
     valst_numeris = db.Column('Valstybinis numeris', db.String(200), nullable=False)
     vin = db.Column('VIN', db.String(17), nullable=False)
     vartotojas_id = db.Column(db.Integer, db.ForeignKey('vartotojas.id'))
-    vartotojas = db.relationship('Vartotojas', lazy=True)
+    gedimai = db.relationship('Gedimas', cascade='all,delete', backref='car')
     
     def __repr__(self) -> str:
-        return f'{self.id} {self.modelis} {self.marke} {self.gaminimo_metai}'
-    
+        return f'{self.modelis} {self.marke} {self.gaminimo_metai}'
+
+
 class Gedimas(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     sukurta = db.Column('Sukurta', DateTime, default=datetime.utcnow())
-    masina = db.relationship('Car', lazy=True)
     gedimas = db.Column('Gedimas', db.String(200), default=False)
     gedimo_busena = db.Column('Gedimo būsena', db.String(200), default=False)
     gedimo_kaina = db.Column('Gedimo kaina', db.String(200), default=False)
@@ -42,6 +43,7 @@ class Gedimas(db.Model):
     
     def __repr__(self) -> str:
         return f'{self.gedimas}'
+
 
 class AdminModel(ModelView):
     def is_accessible(self):

@@ -1,7 +1,8 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="content-section"><form method="POST" action="{{ url_for('profilis') }}">{{ form.hidden_tag() }}
+<div class="content-section">
+    <form method="POST" action="{{ url_for('profilis') }}">{{ form.hidden_tag() }}
     <fieldset class="form-group">
         <legend class="border-bottom mb-4">Vartotojo {{ form.vardas.data }} Profilis</legend>
         <div class="form-group">
@@ -29,11 +30,19 @@
             {% else %}
                 {{ form.el_pastas(class="form-control form-control-lg") }}
             {% endif %}
+        </div> 
+        <div class="container">
+            Jūsų mašinos
+            <ul>
+                {%for masina in current_user.masinos%}
+                    <li>{{masina}}</li>
+                {% endfor %}
+            </ul>
         </div>
-       
     </fieldset>
     <div class="form-group">
         {{ form.submit(class="btn btn-outline-info") }}
     </div>
-</form></div>
+    </form>
+</div>
 {% endblock content %}

@@ -5,10 +5,11 @@
 <table class="table">
     <thead>
         <tr>
-            <h3 class="center">Gedimų istorija</h3>
+            <h3 class="text-center">Gedimų istorija</h3>
         </tr>
         <tr>
-            <th scope="col" class="text-center">ID</th>
+            <th scope="col" class="text-center">Mašina</th>
+            <th scope="col" class="text-center">Gedimo ID</th>
             <th scope="col" class="text-center">Prideta</th>
             <th scope="col" class="text-center">Gedimai</th>
             <th scope="col" class="text-center">Būsena</th>
@@ -25,6 +26,9 @@
     </thead>
 {%for gedimas in visi_gedimai%}
     <tr>
+        <td class="text-center">
+            {{gedimas.car}}
+        </td>
         <td class="text-center">
             {{gedimas.id}}
         </td>
@@ -57,8 +61,8 @@
             <input class="text-center" type="text" name="price" value="{{gedimas.gedimo_kaina}}" style="width:100px;">
         </td>   
         <td>
-            <input type="submit" value="Išsaugoti" class="btn btn-outline btn-success float-left">
-            <a role="button" class="btn btn-outline btn-danger" href="{{ url_for('pasalinti_gedima', masina_id=masina_id, gedimas_id=gedimas.id) }}">Pašalinti</a>
+            <input type="submit" value="Išsaugoti" class="btn btn-outline btn-success float-right">
+            <a role="button" class="btn btn-outline btn-danger float-right" href="{{ url_for('pasalinti_gedima', masina_id=masina_id, gedimas_id=gedimas.id) }}">Pašalinti</a>
         </td>
         {% endif %}
         </form>
