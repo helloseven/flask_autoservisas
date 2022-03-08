@@ -17,9 +17,10 @@
             {% endif %}
             {% if current_user.is_employee %}
                 <th scope="col" class="text-center">Keisti būsena</th>
-                <th scope="col" class="text-center">Remonto Kaina €</th>
-                <th scope="col" class="text-center">Redaguoti</th>
+                <th scope="col" class="text-center">Remonto Kaina €</th> 
+                <th scope="col" class="text-center">Redaguoti</th> 
             {% endif %}
+            
         </tr>
     </thead>
 {%for gedimas in visi_gedimai%}
@@ -54,15 +55,16 @@
         </td>
         <td>
             <input class="text-center" type="text" name="price" value="{{gedimas.gedimo_kaina}}" style="width:100px;">
-            
-        </td>
-        
+        </td>   
         <td>
             <input type="submit" value="Išsaugoti" class="btn btn-outline btn-success float-left">
-        </form>
-            <a role="button" class="btn btn-outline btn-danger float-right" href="{{ url_for('pasalinti_gedima', masina_id=masina_id, gedimas_id=gedimas.id) }}">Pašalinti</a> 
+            <a role="button" class="btn btn-outline btn-danger" href="{{ url_for('pasalinti_gedima', masina_id=masina_id, gedimas_id=gedimas.id) }}">Pašalinti</a>
         </td>
         {% endif %}
+        </form>
+             
+        
+        
     </tr>
 {%endfor%}
 </table>
