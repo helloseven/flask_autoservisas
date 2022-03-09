@@ -12,8 +12,8 @@
             <th scope="col" class="text-center">Gedimo ID</th>
             <th scope="col" class="text-center">Prideta</th>
             <th scope="col" class="text-center">Gedimai</th>
-            <th scope="col" class="text-center">Būsena</th>
             {% if not current_user.is_employee%}
+                <th scope="col" class="text-center">Būsena</th>
                 <th schop="col" class="text-center">Remonto Kaina €</th>
             {% endif %}
             {% if current_user.is_employee %}
@@ -40,20 +40,22 @@
         <td class="table-danger text-center">
             {{gedimas.gedimas}}
         </td>
+        {% if not current_user.is_employee%}
         <td class="text-center">
             {{gedimas.gedimo_busena}}
         </td>
+        {% endif %}
         {% if not current_user.is_employee%}
         <td class="text-center">
             {{gedimas.gedimo_kaina}}
         </td>
         {% endif %}
         {% if current_user.is_employee %}
-        <form action="{{ url_for('keisti_busena', gedimas_id=gedimas.id) }}" method="POST">
+        <form action="{{ url_for('keisti_busena', masina_id=gedimas.masina_id, gedimas_id=gedimas.id) }}" method="POST">
         <td>
             <select name="busena">
                 {% for o in busena %}
-                    <option value="{{o.name}}">{{o.name}}</option>
+                    <option value="{{o.name}}" {% if o.name == gedimas.gedimo_busena %} selected {% endif %}>{{o.name}}</option>
                 {% endfor %}
                 </select>  
         </td>
@@ -62,17 +64,13 @@
         </td>   
         <td>
             <input type="submit" value="Išsaugoti" class="btn btn-outline btn-success float-right">
-            <a role="button" class="btn btn-outline btn-danger float-right" href="{{ url_for('pasalinti_gedima', masina_id=masina_id, gedimas_id=gedimas.id) }}">Pašalinti</a>
+            <a role="button" class="btn btn-outline btn-danger float-right" href="{{ url_for('pasalinti_gedima', masina_id=gedimas.masina_id, gedimas_id=gedimas.id) }}">Pašalinti</a>
         </td>
         {% endif %}
-        </form>
-             
-        
-        
+        </form>  
     </tr>
 {%endfor%}
 </table>
-{%else%}
-    Gedimų nėra.
+
 {% endif %}
 {% endblock content %}

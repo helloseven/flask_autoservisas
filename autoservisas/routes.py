@@ -36,9 +36,9 @@ def registracija():
         )
         db.session.add(naujas_vartotojas)
         db.session.commit()
-        
+        logout_user()
         flash('Sėkmingai prisiregistravote!', 'success')
-        return redirect(url_for('home'))
+        return redirect(url_for('prisijungimas'))
     return render_template('registracija.html', form=form, current_user=current_user)
 
 
@@ -88,6 +88,7 @@ def profilis():
         form.el_pastas.data = current_user.el_pastas
     return render_template('profilis.html', current_user=current_user, form=form)
 
+
 @app.route('/uzsirasyti', methods=['GET', 'POST'])
 @login_required
 def uzsirasyti():
@@ -111,6 +112,7 @@ def uzsirasyti():
             flash('Mašina užregistruota.', 'success')
             return redirect(url_for('uzsirasyti'))
     return render_template('uzsirasyti.html', form=form, current_user=current_user)
+
 
 @app.route('/gedimas', methods=['GET', 'POST'])
 @login_required
@@ -136,7 +138,7 @@ def gedimas():
 def records():
     page = request.args.get('page', 1, type=int)
     if current_user.is_employee:
-        visi_irasai = Car.query.filter_by().order_by(Car.sukurta.desc()).paginate(page=page, per_page=5)
+        visi_irasai = Car.query.filter().order_by(Car.sukurta.desc()).paginate(page=page, per_page=5)
     else:
         visi_irasai = Car.query.filter_by(vartotojas_id=current_user.id).order_by(Car.sukurta.desc()).paginate(page=page, per_page=5)
     return render_template('irasai.html', visi_irasai=visi_irasai, datetime=datetime)
@@ -146,11 +148,12 @@ def records():
 def pasalinti_masina(masina_id):
     if current_user.is_admin:
         abort(403)
-    else:
+    elif current_user.is_authenticated or current_user.is_employee:
         masina = Car.query.filter_by(id=masina_id).first()
         db.session.delete(masina)
         db.session.commit()
         flash('Mašina pašalinta.', 'success')
+        return redirect(url_for('records'))
     return render_template('irasai.html', masina_id=masina_id)
 
 @app.route('/gedimu_istorija/<int:masina_id>')
@@ -158,30 +161,37 @@ def pasalinti_masina(masina_id):
 def gedimu_istorija(masina_id):
     busena = [{'name': 'Remontuojama'}, {'name': 'Suremontuota'}, {'name': 'Laukiama detalių'}]
     visi_gedimai = Gedimas.query.filter_by(masina_id=masina_id).all()
+    if not visi_gedimai:
+        flash('Gedimų nėra.', 'warning')
     return render_template('gedimu_istorija.html', visi_gedimai=visi_gedimai, busena=busena, datetime=datetime)
 
-@app.route('/gedimu_istorija/<int:gedimas_id>', methods=['GET', 'POST'])
+@app.route('/gedimu_istorija/<int:masina_id>/<int:gedimas_id>/change', methods=['GET', 'POST'])
 @login_required
-def keisti_busena(gedimas_id):
-    busena = request.form.get('busena')
-    kaina = request.form.get('price')
-    gedimas = Gedimas.query.filter_by(id=gedimas_id).first()
-    gedimas.gedimo_busena = busena
-    gedimas.gedimo_kaina = kaina
-    db.session.commit()
-    flash('Būsena atnaujinta', 'success')
-    return render_template('gedimu_istorija.html', gedimas_id=gedimas_id)
-
-@app.route('/gedimu_istorija/<int:gedimas_id>/delete', methods=['GET','POST'])
-@login_required
-def pasalinti_gedima(gedimas_id):
+def keisti_busena(masina_id, gedimas_id):
     if not current_user.is_employee:
         abort(403)
-    else:
-        gedimas = Gedimas.query.filter_by(id=gedimas_id).first()
+    elif current_user.is_employee:
+        busena = request.form.get('busena')
+        kaina = request.form.get('price')
+        gedimas = Gedimas.query.filter_by(masina_id=masina_id, id=gedimas_id).first()
+        gedimas.gedimo_busena = busena
+        gedimas.gedimo_kaina = kaina
+        db.session.commit()
+        flash('Būsena atnaujinta', 'success')
+        return redirect(url_for('gedimu_istorija', masina_id=masina_id)) 
+    return render_template('gedimu_istorija.html')
+
+@app.route('/gedimu_istorija/<int:masina_id>/<int:gedimas_id>/delete', methods=['GET','POST'])
+@login_required
+def pasalinti_gedima(masina_id, gedimas_id):
+    if not current_user.is_employee:
+        abort(403)
+    elif current_user.is_employee:
+        gedimas = Gedimas.query.filter_by(masina_id=masina_id,id=gedimas_id).first()
         db.session.delete(gedimas)
         db.session.commit()
         flash('Gedimo įrašas pašalintas.', 'success')
-    return render_template('gedimu_istorija.html', gedimas=gedimas, gedimas_id=gedimas_id)
+        return redirect(url_for('gedimu_istorija', masina_id=masina_id)) 
+    return render_template('gedimu_istorija.html')
 
 

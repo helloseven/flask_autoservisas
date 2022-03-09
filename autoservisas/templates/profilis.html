@@ -32,12 +32,14 @@
             {% endif %}
         </div> 
         <div class="container">
-            Jūsų mašinos
+            {% if not current_user.is_employee %}
+            Jūsų mašinos:
             <ul>
                 {%for masina in current_user.masinos%}
                     <li>{{masina}}</li>
                 {% endfor %}
             </ul>
+            {% endif %}
         </div>
     </fieldset>
     <div class="form-group">
